@@ -1,0 +1,82 @@
+{% comment %}
+  Professional Blog Article Template
+  Displays article title, author, publish date, featured image, and article content.
+{% endcomment %}
+
+<section class="blog-article container mx-auto py-12">
+  <article class="max-w-3xl mx-auto">
+
+    {%- if section.settings.show_title -%}
+      <h1 class="text-4xl font-bold mb-4">{{ article.title }}</h1>
+    {%- endif -%}
+
+    <div class="text-sm text-gray-500 flex items-center gap-4 mb-6">
+      {%- if section.settings.show_author and article.author -%}
+        <span class="author">{{ article.author }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.show_date -%}
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: "%B %d, %Y" }}
+        </time>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_featured_image and article.image -%}
+      <div class="article-image mb-8">
+        <img 
+          src="{{ article.image | img_url: 'master' }}" 
+          alt="{{ article.image.alt | escape }}" 
+          class="w-full rounded-lg shadow"
+        >
+      </div>
+    {%- endif -%}
+
+    <div class="article-content prose max-w-none">
+      {{ article.content }}
+    </div>
+
+  </article>
+</section>
+
+{% schema %}
+{
+  "name": "Blog Article",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show article title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+           "id": "show_date",
+      "label": "Show publish date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "Show featured image",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Article"
+    }
+  ]
+}
+{% endschema %}
