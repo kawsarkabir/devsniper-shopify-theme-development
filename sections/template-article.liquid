@@ -1,17 +1,17 @@
-<article class="py-8">
+<article class="py-8" itemscope itemtype="http:schema.org/Blog/BlogPosting">
   <!-- Blog Title + Article Title -->
   <div class="flex items-center justify-center mb-6">
     <div class="max-w-7xl text-center px-4">
       <a href="{{ blog.url }}" class="text-base uppercase text-gray-500 hover:text-gray-900 font-bold">
         {{ blog.title }}
       </a>
-      <h1 class="text-4xl md:text-6xl font-medium mt-2">{{ article.title }}</h1>
+      <h1 class="text-4xl md:text-6xl font-medium mt-2" itemprop="headline">{{ article.title }}</h1>
     </div>
   </div>
 
   <!-- Author -->
   {% if section.settings.enable_author %}
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center" itemscope itemtype="https://schema.org/Person">
       <div class="max-w-7xl text-center text-gray-600">
         <small>{{ article.author }}</small>
       </div>
@@ -22,7 +22,7 @@
   {% if section.settings.enable_published_date %}
     <div class="flex items-center justify-center mt-2">
       <div class="max-w-7xl text-center text-gray-600">
-        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        <time itemprop="datePublished  dateCreated" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
           {{ article.published_at | date: format: 'on_date' }}
         </time>
       </div>
@@ -45,7 +45,7 @@
 
   <!-- Article Content -->
   <div class="flex items-center justify-center">
-    <div class="max-w-7xl w-full px-4 prose prose-lg">
+    <div class="max-w-7xl w-full px-4 prose prose-lg" itemprop="articleBody">
       {{ article.content }}
     </div>
   </div>
@@ -145,6 +145,39 @@
     </div>
   </div>
 {% endif %}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ article.title | json }},
+    "description": {{ article.excerpt_or_content | strip_html | truncate: 160 | json }},
+    "articleBody": {{ article.content | strip_html | json }},
+    "image": [
+      {% if article.image %}
+        {{ article.image | img_url: 'master' | prepend: 'https:' | json }}
+      {% endif %}
+    ],
+    "author": {
+      "@type": "Person",
+      "name": {{ article.author | json }}
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "logo": {
+        "@type": "ImageObject",
+        "url": {{ shop.logo | img_url: 'master' | prepend: 'https:' | json }}
+      }
+    },
+    "datePublished": "{{ article.published_at | date: '%Y-%m-%d' }}",
+    "dateModified": "{{ article.updated_at | date: '%Y-%m-%d' }}",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ article.url | prepend: shop.url | json }}
+    }
+  }
+</script>
 
 {% schema %}
 {
